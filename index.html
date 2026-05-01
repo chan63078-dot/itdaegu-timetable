@@ -3,17 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IT 전국 강의시간표 검색</title>
+  <title>IT Academy 대구 강의시간표</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', Arial, sans-serif;
       background: #f0f2f5;
       color: #111;
       min-height: 100vh;
     }
-
     .header {
       background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
       color: #fff;
@@ -24,7 +22,7 @@
       z-index: 100;
     }
     .header-inner {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -33,67 +31,123 @@
     }
     .header-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
     .header-logo span { color: #93c5fd; }
-    .header-sub { font-size: 13px; color: #bfdbfe; margin-top: 1px; }
+    .header-sub { font-size: 13px; color: #bfdbfe; }
     .header-divider { flex: 1; }
     .header-badge {
-      font-size: 11px;
+      font-size: 12px;
       background: rgba(255,255,255,.15);
       border: 1px solid rgba(255,255,255,.25);
-      padding: 4px 10px;
+      padding: 4px 14px;
       border-radius: 20px;
       color: #e0f2fe;
+      font-weight: 600;
     }
-
-    .hero {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%);
-      color: #fff;
-      padding: 36px 24px 48px;
-    }
-    .hero-inner { max-width: 1100px; margin: 0 auto; }
-    .hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
-    .hero p { font-size: 14px; color: #bfdbfe; line-height: 1.6; }
-    .hero-stats { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
-    .stat-item {
-      background: rgba(255,255,255,.1);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 10px;
-      padding: 10px 18px;
-      text-align: center;
-    }
-    .stat-num { font-size: 22px; font-weight: 800; line-height: 1; }
-    .stat-label { font-size: 11px; color: #bfdbfe; margin-top: 3px; }
-
-    .main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
-
-    .search-card {
+    .main { max-width: 1280px; margin: 0 auto; padding: 24px 16px 60px; }
+    .filter-card {
       background: #fff;
       border-radius: 14px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.08);
-      padding: 20px;
-      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      padding: 16px 20px;
+      margin-bottom: 16px;
     }
-    .search-card-title {
-      font-size: 13px; font-weight: 600; color: #6b7280;
-      letter-spacing: 0.5px; margin-bottom: 14px;
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f9fafb;
+      border: 1.5px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      transition: border-color .15s;
     }
-
-    .notice {
-      background: #eff6ff; border: 1px solid #bfdbfe;
-      border-radius: 10px; padding: 12px 16px;
-      font-size: 12px; color: #1e40af; margin-bottom: 16px;
-      display: flex; align-items: flex-start; gap: 8px; line-height: 1.6;
+    .search-bar:focus-within { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
+    .search-bar input {
+      border: none; outline: none; background: transparent;
+      font-size: 14px; flex: 1; color: #111; font-family: inherit;
     }
-
+    .search-bar input::placeholder { color: #9ca3af; }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .filter-label { font-size: 11px; color: #9ca3af; font-weight: 600; letter-spacing: .3px; white-space: nowrap; }
+    .filter-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    .chip {
+      font-size: 12px; padding: 5px 12px; border-radius: 20px;
+      border: 1px solid #d1d5db; background: #fff;
+      color: #6b7280; cursor: pointer; transition: all .15s; font-family: inherit;
+      white-space: nowrap;
+    }
+    .chip:hover { border-color: #818cf8; color: #4f46e5; background: #f5f3ff; }
+    .chip.active { background: #eef2ff; color: #4338ca; border-color: #a5b4fc; font-weight: 600; }
+    .filter-divider { width: 1px; background: #e5e7eb; align-self: stretch; margin: 0 6px; }
+    .table-wrap {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .table-title { font-size: 14px; font-weight: 700; color: #111; }
+    .result-count { font-size: 13px; color: #6b7280; }
+    .result-count strong { color: #1e3a8a; font-size: 15px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #1e3a8a; }
+    thead th {
+      padding: 11px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      color: #fff;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+    thead th:last-child { border-right: none; }
+    thead th:hover { background: #1d4ed8; }
+    thead th.asc::after { content: ' ▲'; font-size: 9px; color: #93c5fd; }
+    thead th.desc::after { content: ' ▼'; font-size: 9px; color: #93c5fd; }
+    tbody tr:nth-child(even) { background: #f9fafb; }
+    tbody tr:hover { background: #eff6ff !important; }
+    tbody td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    .td-name { font-weight: 600; color: #111; min-width: 200px; line-height: 1.4; }
+    .td-room { color: #374151; white-space: nowrap; }
+    .td-instructor { color: #374151; white-space: nowrap; }
+    .td-days { font-weight: 500; white-space: nowrap; color: #374151; }
+    .td-date { color: #6b7280; white-space: nowrap; font-size: 12px; }
+    .td-notes { color: #d97706; font-size: 12px; min-width: 180px; line-height: 1.5; }
+    .badge {
+      display: inline-block;
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;
+    }
+    .badge-weekday { background: #dbeafe; color: #1e40af; }
+    .badge-weekend { background: #d1fae5; color: #065f46; }
+    .badge-morning { background: #fef9c3; color: #854d0e; }
+    .badge-afternoon { background: #ffedd5; color: #9a3412; }
+    .badge-evening { background: #ede9fe; color: #5b21b6; }
+    .empty-msg { text-align: center; padding: 48px; color: #9ca3af; font-size: 14px; }
     .footer {
       text-align: center; padding: 24px; font-size: 12px;
       color: #9ca3af; border-top: 1px solid #e5e7eb;
       background: #fff; margin-top: 20px;
     }
-
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 20px; }
-      .hero-stats { gap: 10px; }
-      .stat-item { padding: 8px 14px; }
+    @media (max-width: 768px) {
+      .table-header { padding: 10px 14px; }
+      thead th, tbody td { padding: 8px 10px; }
+      .td-name { min-width: 160px; }
     }
   </style>
 </head>
@@ -101,320 +155,227 @@
 
 <header class="header">
   <div class="header-inner">
-    <div>
-      <div class="header-logo">IT<span>Academy</span></div>
-    </div>
-    <div class="header-sub">전국 강의시간표 검색</div>
+    <div class="header-logo">IT<span>Academy</span></div>
+    <div class="header-sub">대구 강의시간표</div>
     <div class="header-divider"></div>
-    <div class="header-badge">대구 · 강남 · 신촌 · 부산</div>
+    <div class="header-badge">📍 대구</div>
   </div>
 </header>
 
-<section class="hero">
-  <div class="hero-inner">
-    <h1>전국 지점 강의시간표 검색</h1>
-    <p>강의명·강사명으로 검색하면 전국 모든 지점의 개설 일정을 한 번에 확인할 수 있습니다.<br>지점·유형·월 필터를 함께 사용하면 더 빠르게 찾을 수 있어요.</p>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-num" id="stat-total">—</div>
-        <div class="stat-label">전체 강좌</div>
+<main class="main">
+  <div class="filter-card">
+    <div class="search-bar">
+      <span>🔍</span>
+      <input id="search-input" type="text"
+        placeholder="강의명 · 강사명 · 강의실 검색"
+        autocomplete="off" />
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">유형</span>
+      <div class="filter-group" id="type-filters">
+        <button class="chip active" data-type="전체">전체</button>
+        <button class="chip" data-type="평일">평일</button>
+        <button class="chip" data-type="주말">주말</button>
       </div>
-      <div class="stat-item">
-        <div class="stat-num" id="stat-branches">—</div>
-        <div class="stat-label">운영 지점</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" id="stat-weekday">—</div>
-        <div class="stat-label">평일반</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" id="stat-weekend">—</div>
-        <div class="stat-label">주말반</div>
+      <div class="filter-divider"></div>
+      <span class="filter-label">월</span>
+      <div class="filter-group" id="month-filters">
+        <button class="chip active" data-month="전체">전체</button>
       </div>
     </div>
   </div>
-</section>
 
-<main class="main">
-  <div class="notice">
-    💡 <span>강의시간표는 사정에 따라 변경될 수 있습니다. 휴강·보강 일정은 개별 강좌 카드의 비고란을 확인해 주세요.</span>
-  </div>
-  <div class="search-card">
-    <div class="search-card-title">🔎 강좌 검색 및 필터</div>
-    <div id="timetable-section"></div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="table-title">🗓️ 강의 목록</div>
+      <div class="result-count" id="result-count"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th data-col="name">강의명</th>
+            <th data-col="room">강의실</th>
+            <th data-col="instructor">강사명</th>
+            <th data-col="type">유형</th>
+            <th data-col="days">요일</th>
+            <th data-col="time">시간</th>
+            <th data-col="startDate">시작일</th>
+            <th data-col="endDate">종료일</th>
+            <th data-col="notes">비고</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="9" class="empty-msg">⏳ 로딩 중...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </main>
 
 <footer class="footer">
-  © 2026 IT Academy · 데이터 기준일: 2026-04-25 · 운영 지점: 대구 · 강남 · 신촌 · 부산
+  © 2026 IT Academy 대구 · 데이터 기준일: 2026-04-25
 </footer>
 
 <script>
-window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구","강남","신촌","부산"],"courses":[{"id":1,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 1","room":"A[10층]-1","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-07","endDate":"2026-06-06","notes":"휴강: 05/25, 06/03"},{"id":2,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 2","room":"A[10층]-2","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-07","endDate":"2026-07-06","notes":""},{"id":3,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 3","room":"A[10층]-2","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-07","endDate":"2026-08-06","notes":"휴강: 07/17"},{"id":4,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 4","room":"A[10층]-2","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-08-07","endDate":"2026-09-06","notes":"휴강: 08/17"},{"id":5,"branch":"대구","name":"AI 활용 소프트웨어 개발자 양성과정 6","room":"B[10층]-1","instructor":"최해만3","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-09","endDate":"2026-05-20","notes":""},{"id":6,"branch":"대구","name":"AI 활용 소프트웨어 개발자 양성과정 1","room":"B[10층]-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-22","endDate":"2026-07-21","notes":""},{"id":7,"branch":"대구","name":"AI 활용 소프트웨어 개발자 양성과정 2","room":"B[10층]-2","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-22","endDate":"2026-08-21","notes":""},{"id":8,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 2","room":"B[10층]-2","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-04","endDate":"2026-05-03","notes":"04/22(수) 대체강사:김성우"},{"id":9,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 3","room":"C[10층]-1","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-04","endDate":"2026-06-03","notes":""},{"id":10,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 4","room":"B[10층]-2","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-04","endDate":"2026-07-03","notes":"휴강: 04/30"},{"id":11,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 5","room":"C[10층]-1","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-04","endDate":"2026-08-07","notes":""},{"id":12,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 6","room":"C[10층]-2","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-08-03","endDate":"2026-09-01","notes":""},{"id":13,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 2","room":"C[10층]-2","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-03-26","endDate":"2026-04-25","notes":"휴강: 04/02"},{"id":14,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 3","room":"E[9층]-1","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-26","endDate":"2026-05-25","notes":""},{"id":15,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 4","room":"C[10층]-2","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-26","endDate":"2026-06-25","notes":"휴강: 05/01,04,05"},{"id":16,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 5","room":"D[9층]-1","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-26","endDate":"2026-07-25","notes":""},{"id":17,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"이스트캠프 모집대행-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-03-24","endDate":"2026-04-23","notes":""},{"id":18,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"이스트캠프 모집대행-2","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-24","endDate":"2026-05-23","notes":"휴강: 05/25, 06/03"},{"id":19,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"E[9층]-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-24","endDate":"2026-06-23","notes":""},{"id":20,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"E[9층]-2","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-24","endDate":"2026-07-23","notes":"휴강: 07/10, 07/17"},{"id":21,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"E[9층]-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-24","endDate":"2026-08-07","notes":""},{"id":22,"branch":"대구","name":"AI엔지니어 LLM멀티모달1","room":"A[10층]-1","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-11","notes":"휴강: 05/01"},{"id":23,"branch":"대구","name":"AI활용 컴퓨터비전 프로젝트5","room":"A[10층]-2","instructor":"박원민2","days":"화목금","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":"휴강: 05/05"},{"id":24,"branch":"대구","name":"C언어2","room":"B[10층]-1","instructor":"소병민","days":"월수","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-06","notes":""},{"id":25,"branch":"대구","name":"파이썬2","room":"B[10층]-2","instructor":"석득화","days":"화목","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":"휴강: 05/05"},{"id":26,"branch":"대구","name":"바이브코딩 기초","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-11","notes":"휴강: 05/01"},{"id":27,"branch":"대구","name":"웹보안1","room":"C[10층]-2","instructor":"정우균","days":"화목금","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":"휴강: 05/05"},{"id":28,"branch":"대구","name":"마케팅 자동화의 모든것","room":"E[9층]-1","instructor":"AI노원:조은하","days":"화목","time":"19:00","type":"평일","startDate":"2026-03-17","endDate":"2026-04-14","notes":"휴강: 03/26→보강: 04/14"},{"id":29,"branch":"대구","name":"Claude 바이브코딩1","room":"E[9층]-2","instructor":"AI신촌:신동열","days":"월화수목","time":"19:00","type":"평일","startDate":"2026-03-17","endDate":"2026-04-13","notes":""},{"id":30,"branch":"대구","name":"AI올인원 : 기획/문서/자동화 끝판왕","room":"AI아카데미-1","instructor":"AI인천:김현수","days":"월수","time":"19:00","type":"평일","startDate":"2026-04-15","endDate":"2026-05-13","notes":"긴급휴강: 04/20→보강: 05/08"},{"id":31,"branch":"대구","name":"AI엔지니어 LLM멀티모달2","room":"A[10층]-1","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-13","endDate":"2026-06-08","notes":"휴강: 05/04"},{"id":32,"branch":"대구","name":"AI활용 컴퓨터비전 프로젝트6","room":"A[10층]-2","instructor":"박원민2","days":"화목금","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":33,"branch":"대구","name":"C언어1","room":"B[10층]-1","instructor":"소병민","days":"월수","time":"19:00","type":"평일","startDate":"2026-05-13","endDate":"2026-06-08","notes":""},{"id":34,"branch":"대구","name":"파이썬1","room":"B[10층]-2","instructor":"석득화","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":35,"branch":"대구","name":"바이브코딩 심화","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-13","endDate":"2026-06-08","notes":""},{"id":36,"branch":"대구","name":"AI활용 콘텐츠 제작1","room":"C[10층]-2","instructor":"김유경6","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":37,"branch":"대구","name":"리눅스1","room":"E[9층]-1","instructor":"정우균","days":"월~금","time":"19:00","type":"평일","startDate":"2026-05-26","endDate":"2026-06-25","notes":""},{"id":38,"branch":"대구","name":"웹보안2","room":"E[9층]-2","instructor":"박호범2","days":"화목금","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":39,"branch":"대구","name":"파이썬1","room":"A[10층]-1","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":40,"branch":"대구","name":"AI엔지니어 LLM멀티모달3","room":"A[10층]-2","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-12","endDate":"2026-07-08","notes":""},{"id":41,"branch":"대구","name":"파이썬2","room":"B[10층]-1","instructor":"","days":"화목","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":42,"branch":"대구","name":"C언어2","room":"B[10층]-2","instructor":"석득화","days":"월수","time":"19:00","type":"평일","startDate":"2026-06-15","endDate":"2026-07-08","notes":""},{"id":43,"branch":"대구","name":"바이브코딩 기초","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":44,"branch":"대구","name":"AI활용 콘텐츠 제작2","room":"C[10층]-2","instructor":"김유경6","days":"화목","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":45,"branch":"대구","name":"AI 활용 Spring 웹개발1","room":"D[9층]-1","instructor":"","days":"월~금","time":"19:00","type":"평일","startDate":"2026-06-15","endDate":"2026-07-10","notes":""},{"id":46,"branch":"대구","name":"네트워크보안1","room":"E[9층]-1","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":47,"branch":"대구","name":"리눅스2","room":"E[9층]-2","instructor":"박호범2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-12","endDate":"2026-07-08","notes":""},{"id":48,"branch":"대구","name":"파이썬2","room":"A[10층]-1","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-07","notes":""},{"id":49,"branch":"대구","name":"AI엔지니어 LLM멀티모달4","room":"A[10층]-2","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-15","endDate":"2026-08-10","notes":""},{"id":50,"branch":"대구","name":"바이브코딩 심화","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-13","notes":""},{"id":51,"branch":"대구","name":"ChatGPT AI활용","room":"C[10층]-2","instructor":"김유경6","days":"화목","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-13","notes":""},{"id":52,"branch":"대구","name":"AI 활용 Spring 웹개발2","room":"D[9층]-1","instructor":"","days":"월~금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-10","notes":""},{"id":53,"branch":"대구","name":"DBMS","room":"E[9층]-1","instructor":"","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-07","notes":""},{"id":54,"branch":"대구","name":"네트워크보안2","room":"E[9층]-2","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-07","notes":""},{"id":55,"branch":"대구","name":"파이썬1/주말","room":"B[10층]-1","instructor":"소병민","days":"토/일","time":"10:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":56,"branch":"대구","name":"SQLD/주말","room":"C[10층]-1","instructor":"박호범2","days":"토/일","time":"10:00","type":"주말","startDate":"2026-04-18","endDate":"2026-05-10","notes":""},{"id":57,"branch":"대구","name":"정보처리기사실기1/주말","room":"E[9층]-1","instructor":"박상신3","days":"토/일","time":"10:00","type":"주말","startDate":"2026-05-16","endDate":"2026-06-14","notes":"휴강: 05/23~24, 정상수업: 06/06"},{"id":58,"branch":"대구","name":"자바1/주말","room":"B[10층]-1","instructor":"이창배2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":59,"branch":"대구","name":"AI비서 오픈클로/주말","room":"C[10층]-1","instructor":"박원민2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":60,"branch":"대구","name":"나만의 GPT 올인원 로드맵","room":"AI아카데미-1","instructor":"AI강남:정운국","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-02","endDate":"2026-05-31","notes":"날짜: 05/02,03,09,10,16,17,30,31 / 휴강: 05/23~24"},{"id":61,"branch":"대구","name":"파이썬2/주말","room":"B[10층]-1","instructor":"소병민","days":"토/일","time":"10:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-21","notes":""},{"id":62,"branch":"대구","name":"정보처리기사실기2/주말","room":"E[9층]-1","instructor":"박상신3","days":"토/일","time":"10:00","type":"주말","startDate":"2026-06-20","endDate":"2026-07-12","notes":""},{"id":63,"branch":"대구","name":"AICE 어소시에이트 취득과정1","room":"AI아카데미-1","instructor":"AI대구:석득화","days":"토/일","time":"09:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-28","notes":"날짜: 05/30,31,06/13,14,20,21,27,28 / 휴강: 06/06~07"},{"id":64,"branch":"대구","name":"자바2/주말","room":"B[10층]-1","instructor":"김성우2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-21","notes":"날짜: 05/02,03,09,10,16,17,30,31"},{"id":65,"branch":"대구","name":"네트워크1/주말","room":"C[10층]-1","instructor":"김성우2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-21","notes":""},{"id":66,"branch":"대구","name":"나만의 GPT 올인원 로드맵","room":"AI아카데미-1","instructor":"AI강남:정운국","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-02","endDate":"2026-05-31","notes":"휴강: 05/23~24"},{"id":67,"branch":"대구","name":"ADsP/주말","room":"A[10층]-1","instructor":"김정우5","days":"토/일","time":"10:00","type":"주말","startDate":"2026-07-04","endDate":"2026-07-26","notes":""},{"id":68,"branch":"대구","name":"웹기초1/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"10:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""},{"id":69,"branch":"대구","name":"SQLD/주말","room":"C[10층]-1","instructor":"박호범2","days":"토/일","time":"10:00","type":"주말","startDate":"2026-07-11","endDate":"2026-08-02","notes":""},{"id":70,"branch":"대구","name":"자바1/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"14:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""},{"id":71,"branch":"대구","name":"네트워크2/주말","room":"C[10층]-1","instructor":"","days":"토/일","time":"14:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""},{"id":72,"branch":"대구","name":"빅데이터분석기사필기/주말","room":"A[10층]-1","instructor":"박호범2","days":"토/일","time":"15:00","type":"주말","startDate":"2026-07-25","endDate":"2026-08-23","notes":""},{"id":73,"branch":"대구","name":"웹기초2/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"10:00","type":"주말","startDate":"2026-07-25","endDate":"2026-08-16","notes":""},{"id":74,"branch":"대구","name":"정보처리기사실기1/주말","room":"E[9층]-1","instructor":"","days":"토/일","time":"10:00","type":"주말","startDate":"2026-08-08","endDate":"2026-09-06","notes":""},{"id":75,"branch":"대구","name":"자바2/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"14:00","type":"주말","startDate":"2026-07-25","endDate":"2026-08-16","notes":""},{"id":101,"branch":"강남","name":"파이썬1","room":"강남 3층-A","instructor":"김민준","days":"화목","time":"19:00","type":"평일","startDate":"2026-04-21","endDate":"2026-05-19","notes":""},{"id":102,"branch":"강남","name":"파이썬2","room":"강남 3층-A","instructor":"김민준","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-21","endDate":"2026-06-18","notes":""},{"id":103,"branch":"강남","name":"자바 기초","room":"강남 3층-B","instructor":"이수진","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-04","endDate":"2026-06-06","notes":""},{"id":104,"branch":"강남","name":"자바 심화","room":"강남 3층-B","instructor":"이수진","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-08","endDate":"2026-07-10","notes":""},{"id":105,"branch":"강남","name":"AI 활용 입문","room":"강남 4층-A","instructor":"정운국","days":"월수","time":"19:00","type":"평일","startDate":"2026-06-15","endDate":"2026-07-13","notes":""},{"id":106,"branch":"강남","name":"ChatGPT 업무 자동화","room":"강남 4층-B","instructor":"정운국","days":"화목","time":"19:00","type":"평일","startDate":"2026-07-07","endDate":"2026-08-04","notes":""},{"id":107,"branch":"강남","name":"파이썬1/주말","room":"강남 3층-A","instructor":"김민준","days":"토/일","time":"10:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":108,"branch":"강남","name":"자바1/주말","room":"강남 3층-B","instructor":"이수진","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-09","endDate":"2026-06-07","notes":""},{"id":109,"branch":"강남","name":"SQLD/주말","room":"강남 4층-A","instructor":"박호범","days":"토/일","time":"10:00","type":"주말","startDate":"2026-06-06","endDate":"2026-06-28","notes":""},{"id":110,"branch":"강남","name":"나만의 GPT 올인원 로드맵","room":"강남 4층-B","instructor":"정운국","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-16","endDate":"2026-06-14","notes":""},{"id":201,"branch":"신촌","name":"파이썬 기초","room":"신촌 2층-A","instructor":"신동열","days":"화목","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":""},{"id":202,"branch":"신촌","name":"파이썬 활용","room":"신촌 2층-A","instructor":"신동열","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-19","endDate":"2026-06-16","notes":""},{"id":203,"branch":"신촌","name":"C언어","room":"신촌 2층-B","instructor":"오현태","days":"월수","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-11","notes":""},{"id":204,"branch":"신촌","name":"웹개발 기초","room":"신촌 3층-A","instructor":"한지수","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-11","endDate":"2026-06-12","notes":""},{"id":205,"branch":"신촌","name":"React 웹개발","room":"신촌 3층-A","instructor":"한지수","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-15","endDate":"2026-07-17","notes":""},{"id":206,"branch":"신촌","name":"AI 콘텐츠 제작","room":"신촌 3층-B","instructor":"조은하","days":"화목","time":"19:00","type":"평일","startDate":"2026-06-09","endDate":"2026-07-07","notes":""},{"id":207,"branch":"신촌","name":"파이썬1/주말","room":"신촌 2층-A","instructor":"신동열","days":"토/일","time":"10:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":208,"branch":"신촌","name":"C언어/주말","room":"신촌 2층-B","instructor":"오현태","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-02","endDate":"2026-05-24","notes":""},{"id":209,"branch":"신촌","name":"정보처리기사실기/주말","room":"신촌 3층-A","instructor":"박상신","days":"토/일","time":"10:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-28","notes":""},{"id":210,"branch":"신촌","name":"바이브코딩 기초/주말","room":"신촌 3층-B","instructor":"신동열","days":"토/일","time":"14:00","type":"주말","startDate":"2026-06-06","endDate":"2026-06-28","notes":""},{"id":301,"branch":"부산","name":"파이썬1","room":"부산 2층-A","instructor":"강현우","days":"화목","time":"19:00","type":"평일","startDate":"2026-04-21","endDate":"2026-05-19","notes":""},{"id":302,"branch":"부산","name":"파이썬2","room":"부산 2층-A","instructor":"강현우","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-26","endDate":"2026-06-23","notes":""},{"id":303,"branch":"부산","name":"자바 기초","room":"부산 2층-B","instructor":"윤서연","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-11","endDate":"2026-06-12","notes":""},{"id":304,"branch":"부산","name":"데이터 분석 입문","room":"부산 3층-A","instructor":"강현우","days":"월수","time":"19:00","type":"평일","startDate":"2026-06-08","endDate":"2026-07-06","notes":""},{"id":305,"branch":"부산","name":"AI 활용 비즈니스","room":"부산 3층-B","instructor":"유재원","days":"화목","time":"19:00","type":"평일","startDate":"2026-06-16","endDate":"2026-07-14","notes":""},{"id":306,"branch":"부산","name":"Spring 웹개발","room":"부산 3층-A","instructor":"윤서연","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-06","endDate":"2026-08-07","notes":""},{"id":307,"branch":"부산","name":"파이썬1/주말","room":"부산 2층-A","instructor":"강현우","days":"토/일","time":"10:00","type":"주말","startDate":"2026-05-02","endDate":"2026-05-24","notes":""},{"id":308,"branch":"부산","name":"자바1/주말","room":"부산 2층-B","instructor":"윤서연","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-16","endDate":"2026-06-14","notes":""},{"id":309,"branch":"부산","name":"SQLD/주말","room":"부산 3층-A","instructor":"박호범","days":"토/일","time":"10:00","type":"주말","startDate":"2026-06-13","endDate":"2026-07-05","notes":""},{"id":310,"branch":"부산","name":"ChatGPT AI활용/주말","room":"부산 3층-B","instructor":"유재원","days":"토/일","time":"14:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""}]};
+window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"courses":[{"id":1,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 1","room":"A[10층]-1","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-07","endDate":"2026-06-06","notes":"휴강: 05/25, 06/03"},{"id":2,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 2","room":"A[10층]-2","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-07","endDate":"2026-07-06","notes":""},{"id":3,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 3","room":"A[10층]-2","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-07","endDate":"2026-08-06","notes":"휴강: 07/17"},{"id":4,"branch":"대구","name":"빅데이터 분석 플랫폼 개발자 양성과정 4","room":"A[10층]-2","instructor":"석득화","days":"월~금","time":"09:00","type":"평일","startDate":"2026-08-07","endDate":"2026-09-06","notes":"휴강: 08/17"},{"id":5,"branch":"대구","name":"AI 활용 소프트웨어 개발자 양성과정 6","room":"B[10층]-1","instructor":"최해만3","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-09","endDate":"2026-05-20","notes":""},{"id":6,"branch":"대구","name":"AI 활용 소프트웨어 개발자 양성과정 1","room":"B[10층]-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-22","endDate":"2026-07-21","notes":""},{"id":7,"branch":"대구","name":"AI 활용 소프트웨어 개발자 양성과정 2","room":"B[10층]-2","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-22","endDate":"2026-08-21","notes":""},{"id":8,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 2","room":"B[10층]-2","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-04","endDate":"2026-05-03","notes":"04/22(수) 대체강사:김성우"},{"id":9,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 3","room":"C[10층]-1","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-04","endDate":"2026-06-03","notes":""},{"id":10,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 4","room":"B[10층]-2","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-04","endDate":"2026-07-03","notes":"휴강: 04/30"},{"id":11,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 5","room":"C[10층]-1","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-04","endDate":"2026-08-07","notes":""},{"id":12,"branch":"대구","name":"(과정평가형) 정보보안산업기사 취득과정A 6","room":"C[10층]-2","instructor":"고기정2","days":"월~금","time":"09:00","type":"평일","startDate":"2026-08-03","endDate":"2026-09-01","notes":""},{"id":13,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 2","room":"C[10층]-2","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-03-26","endDate":"2026-04-25","notes":"휴강: 04/02"},{"id":14,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 3","room":"E[9층]-1","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-26","endDate":"2026-05-25","notes":""},{"id":15,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 4","room":"C[10층]-2","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-26","endDate":"2026-06-25","notes":"휴강: 05/01,04,05"},{"id":16,"branch":"대구","name":"(디컨) 공공데이터 융합 풀스택 개발자 양성과정E 5","room":"D[9층]-1","instructor":"정우균","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-26","endDate":"2026-07-25","notes":""},{"id":17,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"이스트캠프 모집대행-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-03-24","endDate":"2026-04-23","notes":""},{"id":18,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"이스트캠프 모집대행-2","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-04-24","endDate":"2026-05-23","notes":"휴강: 05/25, 06/03"},{"id":19,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"E[9층]-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-05-24","endDate":"2026-06-23","notes":""},{"id":20,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"E[9층]-2","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-06-24","endDate":"2026-07-23","notes":"휴강: 07/10, 07/17"},{"id":21,"branch":"대구","name":"[이스트캠프] 가디언즈 정보보호 및 보안 인프라 운영","room":"E[9층]-1","instructor":"","days":"월~금","time":"09:00","type":"평일","startDate":"2026-07-24","endDate":"2026-08-07","notes":""},{"id":22,"branch":"대구","name":"AI엔지니어 LLM멀티모달1","room":"A[10층]-1","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-11","notes":"휴강: 05/01"},{"id":23,"branch":"대구","name":"AI활용 컴퓨터비전 프로젝트5","room":"A[10층]-2","instructor":"박원민2","days":"화목금","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":"휴강: 05/05"},{"id":24,"branch":"대구","name":"C언어2","room":"B[10층]-1","instructor":"소병민","days":"월수","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-06","notes":""},{"id":25,"branch":"대구","name":"파이썬2","room":"B[10층]-2","instructor":"석득화","days":"화목","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":"휴강: 05/05"},{"id":26,"branch":"대구","name":"바이브코딩 기초","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-04-13","endDate":"2026-05-11","notes":"휴강: 05/01"},{"id":27,"branch":"대구","name":"웹보안1","room":"C[10층]-2","instructor":"정우균","days":"화목금","time":"19:00","type":"평일","startDate":"2026-04-14","endDate":"2026-05-12","notes":"휴강: 05/05"},{"id":28,"branch":"대구","name":"마케팅 자동화의 모든것","room":"E[9층]-1","instructor":"AI노원:조은하","days":"화목","time":"19:00","type":"평일","startDate":"2026-03-17","endDate":"2026-04-14","notes":"휴강: 03/26→보강: 04/14"},{"id":29,"branch":"대구","name":"Claude 바이브코딩1","room":"E[9층]-2","instructor":"AI신촌:신동열","days":"월화수목","time":"19:00","type":"평일","startDate":"2026-03-17","endDate":"2026-04-13","notes":""},{"id":30,"branch":"대구","name":"AI올인원 : 기획/문서/자동화 끝판왕","room":"AI아카데미-1","instructor":"AI인천:김현수","days":"월수","time":"19:00","type":"평일","startDate":"2026-04-15","endDate":"2026-05-13","notes":"긴급휴강: 04/20→보강: 05/08"},{"id":31,"branch":"대구","name":"AI엔지니어 LLM멀티모달2","room":"A[10층]-1","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-13","endDate":"2026-06-08","notes":"휴강: 05/04"},{"id":32,"branch":"대구","name":"AI활용 컴퓨터비전 프로젝트6","room":"A[10층]-2","instructor":"박원민2","days":"화목금","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":33,"branch":"대구","name":"C언어1","room":"B[10층]-1","instructor":"소병민","days":"월수","time":"19:00","type":"평일","startDate":"2026-05-13","endDate":"2026-06-08","notes":""},{"id":34,"branch":"대구","name":"파이썬1","room":"B[10층]-2","instructor":"석득화","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":35,"branch":"대구","name":"바이브코딩 심화","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-05-13","endDate":"2026-06-08","notes":""},{"id":36,"branch":"대구","name":"AI활용 콘텐츠 제작1","room":"C[10층]-2","instructor":"김유경6","days":"화목","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":37,"branch":"대구","name":"리눅스1","room":"E[9층]-1","instructor":"정우균","days":"월~금","time":"19:00","type":"평일","startDate":"2026-05-26","endDate":"2026-06-25","notes":""},{"id":38,"branch":"대구","name":"웹보안2","room":"E[9층]-2","instructor":"박호범2","days":"화목금","time":"19:00","type":"평일","startDate":"2026-05-14","endDate":"2026-06-09","notes":""},{"id":39,"branch":"대구","name":"파이썬1","room":"A[10층]-1","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":40,"branch":"대구","name":"AI엔지니어 LLM멀티모달3","room":"A[10층]-2","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-12","endDate":"2026-07-08","notes":""},{"id":41,"branch":"대구","name":"파이썬2","room":"B[10층]-1","instructor":"","days":"화목","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":42,"branch":"대구","name":"C언어2","room":"B[10층]-2","instructor":"석득화","days":"월수","time":"19:00","type":"평일","startDate":"2026-06-15","endDate":"2026-07-08","notes":""},{"id":43,"branch":"대구","name":"바이브코딩 기초","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":44,"branch":"대구","name":"AI활용 콘텐츠 제작2","room":"C[10층]-2","instructor":"김유경6","days":"화목","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":45,"branch":"대구","name":"AI 활용 Spring 웹개발1","room":"D[9층]-1","instructor":"","days":"월~금","time":"19:00","type":"평일","startDate":"2026-06-15","endDate":"2026-07-10","notes":""},{"id":46,"branch":"대구","name":"네트워크보안1","room":"E[9층]-1","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-06-11","endDate":"2026-07-07","notes":""},{"id":47,"branch":"대구","name":"리눅스2","room":"E[9층]-2","instructor":"박호범2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-06-12","endDate":"2026-07-08","notes":""},{"id":48,"branch":"대구","name":"파이썬2","room":"A[10층]-1","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-07","notes":""},{"id":49,"branch":"대구","name":"AI엔지니어 LLM멀티모달4","room":"A[10층]-2","instructor":"석득화","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-15","endDate":"2026-08-10","notes":""},{"id":50,"branch":"대구","name":"바이브코딩 심화","room":"C[10층]-1","instructor":"박원민2","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-13","notes":""},{"id":51,"branch":"대구","name":"ChatGPT AI활용","room":"C[10층]-2","instructor":"김유경6","days":"화목","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-13","notes":""},{"id":52,"branch":"대구","name":"AI 활용 Spring 웹개발2","room":"D[9층]-1","instructor":"","days":"월~금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-10","notes":""},{"id":53,"branch":"대구","name":"DBMS","room":"E[9층]-1","instructor":"","days":"월수금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-07","notes":""},{"id":54,"branch":"대구","name":"네트워크보안2","room":"E[9층]-2","instructor":"","days":"화목금","time":"19:00","type":"평일","startDate":"2026-07-14","endDate":"2026-08-07","notes":""},{"id":55,"branch":"대구","name":"파이썬1/주말","room":"B[10층]-1","instructor":"소병민","days":"토/일","time":"10:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":56,"branch":"대구","name":"SQLD/주말","room":"C[10층]-1","instructor":"박호범2","days":"토/일","time":"10:00","type":"주말","startDate":"2026-04-18","endDate":"2026-05-10","notes":""},{"id":57,"branch":"대구","name":"정보처리기사실기1/주말","room":"E[9층]-1","instructor":"박상신3","days":"토/일","time":"10:00","type":"주말","startDate":"2026-05-16","endDate":"2026-06-14","notes":"휴강: 05/23~24, 정상수업: 06/06"},{"id":58,"branch":"대구","name":"자바1/주말","room":"B[10층]-1","instructor":"이창배2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":59,"branch":"대구","name":"AI비서 오픈클로/주말","room":"C[10층]-1","instructor":"박원민2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-04-25","endDate":"2026-05-17","notes":""},{"id":60,"branch":"대구","name":"나만의 GPT 올인원 로드맵","room":"AI아카데미-1","instructor":"AI강남:정운국","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-02","endDate":"2026-05-31","notes":"날짜: 05/02,03,09,10,16,17,30,31 / 휴강: 05/23~24"},{"id":61,"branch":"대구","name":"파이썬2/주말","room":"B[10층]-1","instructor":"소병민","days":"토/일","time":"10:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-21","notes":""},{"id":62,"branch":"대구","name":"정보처리기사실기2/주말","room":"E[9층]-1","instructor":"박상신3","days":"토/일","time":"10:00","type":"주말","startDate":"2026-06-20","endDate":"2026-07-12","notes":""},{"id":63,"branch":"대구","name":"AICE 어소시에이트 취득과정1","room":"AI아카데미-1","instructor":"AI대구:석득화","days":"토/일","time":"09:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-28","notes":"날짜: 05/30,31,06/13,14,20,21,27,28 / 휴강: 06/06~07"},{"id":64,"branch":"대구","name":"자바2/주말","room":"B[10층]-1","instructor":"김성우2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-21","notes":"날짜: 05/02,03,09,10,16,17,30,31"},{"id":65,"branch":"대구","name":"네트워크1/주말","room":"C[10층]-1","instructor":"김성우2","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-30","endDate":"2026-06-21","notes":""},{"id":66,"branch":"대구","name":"나만의 GPT 올인원 로드맵","room":"AI아카데미-1","instructor":"AI강남:정운국","days":"토/일","time":"14:00","type":"주말","startDate":"2026-05-02","endDate":"2026-05-31","notes":"휴강: 05/23~24"},{"id":67,"branch":"대구","name":"ADsP/주말","room":"A[10층]-1","instructor":"김정우5","days":"토/일","time":"10:00","type":"주말","startDate":"2026-07-04","endDate":"2026-07-26","notes":""},{"id":68,"branch":"대구","name":"웹기초1/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"10:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""},{"id":69,"branch":"대구","name":"SQLD/주말","room":"C[10층]-1","instructor":"박호범2","days":"토/일","time":"10:00","type":"주말","startDate":"2026-07-11","endDate":"2026-08-02","notes":""},{"id":70,"branch":"대구","name":"자바1/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"14:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""},{"id":71,"branch":"대구","name":"네트워크2/주말","room":"C[10층]-1","instructor":"","days":"토/일","time":"14:00","type":"주말","startDate":"2026-06-27","endDate":"2026-07-19","notes":""},{"id":72,"branch":"대구","name":"빅데이터분석기사필기/주말","room":"A[10층]-1","instructor":"박호범2","days":"토/일","time":"15:00","type":"주말","startDate":"2026-07-25","endDate":"2026-08-23","notes":""},{"id":73,"branch":"대구","name":"웹기초2/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"10:00","type":"주말","startDate":"2026-07-25","endDate":"2026-08-16","notes":""},{"id":74,"branch":"대구","name":"정보처리기사실기1/주말","room":"E[9층]-1","instructor":"","days":"토/일","time":"10:00","type":"주말","startDate":"2026-08-08","endDate":"2026-09-06","notes":""},{"id":75,"branch":"대구","name":"자바2/주말","room":"B[10층]-1","instructor":"","days":"토/일","time":"14:00","type":"주말","startDate":"2026-07-25","endDate":"2026-08-16","notes":""}]};
 </script>
 
 <script>
 (function () {
   'use strict';
 
-  let allCourses  = [];
-  let filtered    = [];
-  let query       = '';
-  let filterBranch = '전체';
+  let allCourses = [];
+  let filtered   = [];
+  let query      = '';
   let filterType  = '전체';
   let filterMonth = '전체';
-
-  const BRANCH_COLORS = {
-    '대구': { bg: '#e0e7ff', color: '#3730a3' },
-    '강남': { bg: '#f3e8ff', color: '#7e22ce' },
-    '신촌': { bg: '#ccfbf1', color: '#0f766e' },
-    '부산': { bg: '#ffe4e6', color: '#9f1239' },
-  };
+  let sortCol = 'startDate';
+  let sortDir = 'asc';
 
   function getMonth(d) { return d ? String(parseInt(d.split('-')[1], 10)) : ''; }
 
   function formatDate(d) {
     if (!d) return '';
     const [, m, day] = d.split('-');
-    return `${parseInt(m,10)}월 ${parseInt(day,10)}일`;
-  }
-
-  function branchBadge(branch) {
-    const c = BRANCH_COLORS[branch] || { bg: '#f3f4f6', color: '#374151' };
-    return `<span class="ts-badge" style="background:${c.bg};color:${c.color}">📍 ${branch}</span>`;
+    return `${parseInt(m,10)}/${parseInt(day,10)}`;
   }
 
   function timeBadge(time) {
-    if (time === '09:00') return '<span class="ts-badge ts-badge-morning">오전 9시</span>';
-    if (time === '10:00') return '<span class="ts-badge ts-badge-morning">오전 10시</span>';
-    if (time === '14:00') return '<span class="ts-badge ts-badge-afternoon">오후 2시</span>';
-    if (time === '15:00') return '<span class="ts-badge ts-badge-afternoon">오후 3시</span>';
-    if (time === '19:00') return '<span class="ts-badge ts-badge-evening">저녁 7시</span>';
-    return `<span class="ts-badge">${time}</span>`;
+    if (time === '09:00') return `<span class="badge badge-morning">오전 9시</span>`;
+    if (time === '10:00') return `<span class="badge badge-morning">오전 10시</span>`;
+    if (time === '14:00') return `<span class="badge badge-afternoon">오후 2시</span>`;
+    if (time === '15:00') return `<span class="badge badge-afternoon">오후 3시</span>`;
+    if (time === '19:00') return `<span class="badge badge-evening">저녁 7시</span>`;
+    return `<span class="badge">${time}</span>`;
   }
 
   function typeBadge(type) {
     return type === '주말'
-      ? '<span class="ts-badge ts-badge-weekend">주말</span>'
-      : '<span class="ts-badge ts-badge-weekday">평일</span>';
+      ? `<span class="badge badge-weekend">주말</span>`
+      : `<span class="badge badge-weekday">평일</span>`;
   }
 
-  async function loadData() {
-    try {
-      if (window.__SCHEDULE_DATA__) {
-        allCourses = window.__SCHEDULE_DATA__.courses || [];
-      } else {
-        const res = await fetch('./data/schedule.json');
-        if (!res.ok) throw new Error('fetch fail');
-        allCourses = (await res.json()).courses || [];
-      }
-      updateStats();
-      applyFilter();
-    } catch (e) {
-      document.getElementById('ts-results').innerHTML =
-        '<p class="ts-empty">❌ 시간표 데이터를 불러오지 못했습니다.</p>';
-    }
-  }
-
-  function updateStats() {
-    const branches = new Set(allCourses.map(c => c.branch).filter(Boolean)).size;
-    const weekday  = allCourses.filter(c => c.type === '평일').length;
-    const weekend  = allCourses.filter(c => c.type === '주말').length;
-    const el = id => document.getElementById(id);
-    if (el('stat-total'))    el('stat-total').textContent    = allCourses.length;
-    if (el('stat-branches')) el('stat-branches').textContent = branches + '개';
-    if (el('stat-weekday'))  el('stat-weekday').textContent  = weekday;
-    if (el('stat-weekend'))  el('stat-weekend').textContent  = weekend;
+  function initMonthFilters() {
+    const months = [...new Set(allCourses.map(c => getMonth(c.startDate)).filter(Boolean))]
+      .sort((a, b) => Number(a) - Number(b));
+    const container = document.getElementById('month-filters');
+    months.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.dataset.month = m;
+      btn.textContent = m + '월';
+      container.appendChild(btn);
+    });
   }
 
   function applyFilter() {
     const q = query.trim().toLowerCase();
     filtered = allCourses.filter(c => {
-      if (filterBranch !== '전체' && c.branch !== filterBranch) return false;
-      if (filterType   !== '전체' && c.type   !== filterType)   return false;
-      if (filterMonth  !== '전체' && getMonth(c.startDate) !== filterMonth) return false;
+      if (filterType  !== '전체' && c.type !== filterType)  return false;
+      if (filterMonth !== '전체' && getMonth(c.startDate) !== filterMonth) return false;
       if (!q) return true;
       return (
         c.name.toLowerCase().includes(q) ||
         (c.instructor && c.instructor.toLowerCase().includes(q)) ||
-        (c.room && c.room.toLowerCase().includes(q)) ||
-        (c.branch && c.branch.toLowerCase().includes(q))
+        (c.room && c.room.toLowerCase().includes(q))
       );
     });
-    filtered.sort((a, b) => (a.startDate > b.startDate ? 1 : -1));
-    renderResults();
+
+    filtered.sort((a, b) => {
+      const va = String(a[sortCol] || '');
+      const vb = String(b[sortCol] || '');
+      if (va < vb) return sortDir === 'asc' ? -1 : 1;
+      if (va > vb) return sortDir === 'asc' ?  1 : -1;
+      return 0;
+    });
+
+    renderTable();
   }
 
-  function renderResults() {
-    const container = document.getElementById('ts-results');
-    if (!container) return;
-    if (allCourses.length === 0) {
-      container.innerHTML = '<p class="ts-empty">⏳ 데이터 로딩 중...</p>';
-      return;
-    }
+  function renderTable() {
+    const tbody   = document.getElementById('table-body');
+    const countEl = document.getElementById('result-count');
+
+    countEl.innerHTML = `<strong>${filtered.length}</strong>개 강좌`;
+
     if (filtered.length === 0) {
-      container.innerHTML = '<p class="ts-empty">검색 결과가 없습니다.</p>';
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-msg">검색 결과가 없습니다.</td></tr>';
       return;
     }
-    const cards = filtered.map(c => `
-      <div class="ts-card">
-        <div class="ts-card-title">${c.name}</div>
-        <div class="ts-card-badges">
-          ${branchBadge(c.branch || '')}
-          ${typeBadge(c.type)}
-          ${timeBadge(c.time)}
-          <span class="ts-badge ts-badge-month">${getMonth(c.startDate)}월</span>
-        </div>
-        <div class="ts-card-meta">
-          <span>📅 ${formatDate(c.startDate)} ~ ${formatDate(c.endDate)}</span>
-          <span>🏫 ${c.room}</span>
-          ${c.instructor ? `<span>👤 ${c.instructor}</span>` : ''}
-          <span>📆 ${c.days}</span>
-        </div>
-        ${c.notes ? `<div class="ts-card-notes">⚠️ ${c.notes}</div>` : ''}
-      </div>`).join('');
 
-    container.innerHTML = `
-      <div class="ts-count">${filtered.length}개 강좌</div>
-      <div class="ts-card-grid">${cards}</div>`;
+    tbody.innerHTML = filtered.map(c => `
+      <tr>
+        <td class="td-name">${c.name}</td>
+        <td class="td-room">${c.room || ''}</td>
+        <td class="td-instructor">${c.instructor || '-'}</td>
+        <td>${typeBadge(c.type)}</td>
+        <td class="td-days">${c.days}</td>
+        <td>${timeBadge(c.time)}</td>
+        <td class="td-date">${formatDate(c.startDate)}</td>
+        <td class="td-date">${formatDate(c.endDate)}</td>
+        <td class="td-notes">${c.notes || ''}</td>
+      </tr>`).join('');
   }
 
-  function injectStyles() {
-    if (document.getElementById('ts-styles')) return;
-    const style = document.createElement('style');
-    style.id = 'ts-styles';
-    style.textContent = `
-      .ts-wrap { padding: 4px 0; }
-      .ts-search-bar {
-        display: flex; align-items: center; gap: 8px;
-        background: #f9fafb; border: 1.5px solid #d1d5db;
-        border-radius: 10px; padding: 10px 14px;
-        margin-bottom: 12px; transition: border-color .15s;
-      }
-      .ts-search-bar:focus-within { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
-      .ts-search-icon { font-size: 16px; color: #9ca3af; flex-shrink: 0; }
-      .ts-search-bar input {
-        border: none; outline: none; background: transparent;
-        font-size: 14px; flex: 1; color: #111; font-family: inherit;
-      }
-      .ts-search-bar input::placeholder { color: #9ca3af; }
-      .ts-filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
-      .ts-filter-label { font-size: 11px; color: #9ca3af; font-weight: 600; letter-spacing: .3px; min-width: 26px; }
-      .ts-filter-group { display: flex; gap: 4px; flex-wrap: wrap; }
-      .ts-chip {
-        font-size: 12px; padding: 5px 12px; border-radius: 20px;
-        border: 1px solid #d1d5db; background: #fff;
-        color: #6b7280; cursor: pointer; transition: all .15s; font-family: inherit;
-      }
-      .ts-chip:hover { border-color: #818cf8; color: #4f46e5; background: #f5f3ff; }
-      .ts-chip.active { background: #eef2ff; color: #4338ca; border-color: #a5b4fc; font-weight: 600; }
-      .ts-filter-sep { width: 100%; height: 1px; background: #f3f4f6; margin: 4px 0; }
-      .ts-count { font-size: 12px; color: #9ca3af; margin-bottom: 10px; font-weight: 500; }
-      .ts-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
-      .ts-card {
-        background: #fff; border: 1px solid #e5e7eb;
-        border-radius: 10px; padding: 12px 14px;
-        transition: box-shadow .15s, border-color .15s;
-      }
-      .ts-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); border-color: #c7d2fe; }
-      .ts-card-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 6px; line-height: 1.4; }
-      .ts-card-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
-      .ts-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-block; }
-      .ts-badge-morning   { background: #fef9c3; color: #854d0e; }
-      .ts-badge-afternoon { background: #ffedd5; color: #9a3412; }
-      .ts-badge-evening   { background: #ede9fe; color: #5b21b6; }
-      .ts-badge-weekday   { background: #dbeafe; color: #1e40af; }
-      .ts-badge-weekend   { background: #d1fae5; color: #065f46; }
-      .ts-badge-month     { background: #f3f4f6; color: #374151; }
-      .ts-card-meta { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4b5563; }
-      .ts-card-notes { font-size: 11px; color: #d97706; margin-top: 6px; padding-top: 6px; border-top: 1px solid #fef3c7; }
-      .ts-empty { font-size: 13px; color: #9ca3af; text-align: center; padding: 32px 0; }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function buildHTML() {
-    const branches = (window.__SCHEDULE_DATA__?.branches || ['대구','강남','신촌','부산']);
-    return `
-      <div class="ts-wrap">
-        <div class="ts-search-bar">
-          <span class="ts-search-icon">🔍</span>
-          <input id="ts-input" type="text"
-            placeholder="강의명·강사명 검색 (예: 파이썬, 석득화, 자바)"
-            autocomplete="off" />
-        </div>
-        <div class="ts-filter-row">
-          <span class="ts-filter-label">지점</span>
-          <div class="ts-filter-group" id="ts-branch-filters">
-            ${['전체', ...branches].map(b =>
-              `<button class="ts-chip${b==='전체'?' active':''}" data-branch="${b}">${b}</button>`
-            ).join('')}
-          </div>
-        </div>
-        <div class="ts-filter-sep"></div>
-        <div class="ts-filter-row">
-          <span class="ts-filter-label">유형</span>
-          <div class="ts-filter-group" id="ts-type-filters">
-            ${['전체','평일','주말'].map(t =>
-              `<button class="ts-chip${t==='전체'?' active':''}" data-type="${t}">${t}</button>`
-            ).join('')}
-          </div>
-          <span class="ts-filter-label" style="margin-left:8px">월</span>
-          <div class="ts-filter-group" id="ts-month-filters">
-            ${['전체','4','5','6','7'].map(m =>
-              `<button class="ts-chip${m==='전체'?' active':''}" data-month="${m}">${m==='전체'?'전체':m+'월'}</button>`
-            ).join('')}
-          </div>
-        </div>
-        <div id="ts-results"></div>
-      </div>`;
+  function setSortIndicator(col, dir) {
+    document.querySelectorAll('thead th').forEach(th => th.classList.remove('asc', 'desc'));
+    const th = document.querySelector(`thead th[data-col="${col}"]`);
+    if (th) th.classList.add(dir);
   }
 
   function bindEvents() {
-    document.getElementById('ts-input').addEventListener('input', e => {
+    document.getElementById('search-input').addEventListener('input', e => {
       query = e.target.value;
       applyFilter();
     });
 
-    document.getElementById('ts-branch-filters').addEventListener('click', e => {
-      const btn = e.target.closest('.ts-chip');
+    document.getElementById('type-filters').addEventListener('click', e => {
+      const btn = e.target.closest('.chip');
       if (!btn) return;
-      document.querySelectorAll('#ts-branch-filters .ts-chip').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filterBranch = btn.dataset.branch;
-      applyFilter();
-    });
-
-    document.getElementById('ts-type-filters').addEventListener('click', e => {
-      const btn = e.target.closest('.ts-chip');
-      if (!btn) return;
-      document.querySelectorAll('#ts-type-filters .ts-chip').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#type-filters .chip').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       filterType = btn.dataset.type;
       applyFilter();
     });
 
-    document.getElementById('ts-month-filters').addEventListener('click', e => {
-      const btn = e.target.closest('.ts-chip');
+    document.getElementById('month-filters').addEventListener('click', e => {
+      const btn = e.target.closest('.chip');
       if (!btn) return;
-      document.querySelectorAll('#ts-month-filters .ts-chip').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#month-filters .chip').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       filterMonth = btn.dataset.month;
+      applyFilter();
+    });
+
+    document.querySelector('thead').addEventListener('click', e => {
+      const th = e.target.closest('th');
+      if (!th || !th.dataset.col) return;
+      const col = th.dataset.col;
+      if (sortCol === col) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortCol = col;
+        sortDir = 'asc';
+      }
+      setSortIndicator(sortCol, sortDir);
       applyFilter();
     });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    injectStyles();
-    const target = document.querySelector('#timetable-section');
-    if (!target) return;
-    target.innerHTML = buildHTML();
+    try {
+      allCourses = window.__SCHEDULE_DATA__.courses || [];
+    } catch (e) {
+      document.getElementById('table-body').innerHTML =
+        '<tr><td colspan="9" class="empty-msg">❌ 데이터를 불러오지 못했습니다.</td></tr>';
+      return;
+    }
+    initMonthFilters();
+    setSortIndicator(sortCol, sortDir);
     bindEvents();
-    document.getElementById('ts-results').innerHTML =
-      '<p class="ts-empty">검색어를 입력하거나 필터를 선택하세요.</p>';
-    loadData();
+    applyFilter();
   });
-
 })();
 </script>
 
