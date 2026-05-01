@@ -184,8 +184,8 @@
     }
     .grid-table thead th.th-time {
       background: #374151;
-      min-width: 92px;
-      width: 92px;
+      min-width: 120px;
+      width: 120px;
     }
     .grid-table thead th.th-room { min-width: 160px; }
 
@@ -201,8 +201,8 @@
       vertical-align: middle;
       border-right: 2px solid #d1d5db;
     }
-    .td-time .tl-main { font-size: 15px; font-weight: 800; color: #1e3a8a; line-height: 1.2; }
-    .td-time .tl-sub  { font-size: 10px; color: #9ca3af; margin-top: 3px; }
+    .td-time .tl-range { font-size: 12px; font-weight: 800; color: #1e3a8a; line-height: 1.4; white-space: nowrap; }
+    .td-time .tl-sub   { font-size: 10px; color: #9ca3af; margin-top: 3px; }
     .td-time .tl-badge {
       display: inline-block;
       margin-top: 5px;
@@ -211,9 +211,10 @@
       border-radius: 10px;
       font-weight: 600;
     }
-    .tl-badge.morning   { background: #fef9c3; color: #92400e; }
-    .tl-badge.afternoon { background: #ffedd5; color: #9a3412; }
-    .tl-badge.evening   { background: #ede9fe; color: #5b21b6; }
+    .tl-badge.gov    { background: #dbeafe; color: #1e40af; }
+    .tl-badge.wkd-am { background: #fef9c3; color: #92400e; }
+    .tl-badge.wkd-pm { background: #ffedd5; color: #9a3412; }
+    .tl-badge.night  { background: #ede9fe; color: #5b21b6; }
 
     .grid-cell {
       padding: 6px;
@@ -387,13 +388,25 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
     '이스트캠프 모집대행-1','이스트캠프 모집대행-2'
   ];
   const TIME_ORDER = ['09:00','10:00','14:00','15:00','19:00'];
-  const TIME_META = {
-    '09:00': { label:'09:00', sub:'국비 오전', badge:'morning' },
-    '10:00': { label:'10:00', sub:'주말 오전', badge:'morning' },
-    '14:00': { label:'14:00', sub:'주말 오후', badge:'afternoon' },
-    '15:00': { label:'15:00', sub:'주말 오후', badge:'afternoon' },
-    '19:00': { label:'19:00', sub:'평일 야간', badge:'evening' },
-  };
+
+  function getEndTime(c) {
+    if (c.time === '09:00') return c.type === '평일' ? '18:00' : '13:00';
+    if (c.time === '10:00') return '13:00';
+    if (c.time === '14:00') return '17:00';
+    if (c.time === '15:00') return '18:00';
+    if (c.time === '19:00') return '22:00';
+    return c.time;
+  }
+
+  function slotMeta(time, type) {
+    if (time === '09:00' && type === '평일') return { range:'09:00 ~ 18:00', sub:'국비 오전반', badge:'gov' };
+    if (time === '09:00' && type === '주말') return { range:'09:00 ~ 13:00', sub:'주말 오전반', badge:'wkd-am' };
+    if (time === '10:00') return { range:'10:00 ~ 13:00', sub:'주말 오전반', badge:'wkd-am' };
+    if (time === '14:00') return { range:'14:00 ~ 17:00', sub:'주말 오후반', badge:'wkd-pm' };
+    if (time === '15:00') return { range:'15:00 ~ 18:00', sub:'주말 오후반', badge:'wkd-pm' };
+    if (time === '19:00') return { range:'19:00 ~ 22:00', sub:'평일 야간반', badge:'night' };
+    return { range: time, sub: '', badge: 'gov' };
+  }
 
   function getMonth(d) { return d ? String(parseInt(d.split('-')[1], 10)) : ''; }
 
@@ -505,29 +518,32 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
       return ia - ib;
     });
 
-    const times = [...new Set(filtered.map(c => c.time).filter(Boolean))].sort((a,b) => {
-      const ia = TIME_ORDER.indexOf(a), ib = TIME_ORDER.indexOf(b);
-      if (ia===-1 && ib===-1) return a.localeCompare(b);
-      if (ia===-1) return 1; if (ib===-1) return -1;
-      return ia - ib;
+    // (시작시간, 유형) 조합별로 행을 분리 — 예: 09:00 평일(국비)과 09:00 주말(AICE)을 별도 행으로
+    const slotKeys = [...new Set(filtered.map(c => `${c.time}|${c.type}`))].sort((a, b) => {
+      const [ta] = a.split('|'), [tb] = b.split('|');
+      const ia = TIME_ORDER.indexOf(ta), ib = TIME_ORDER.indexOf(tb);
+      if (ta !== tb) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      return a.includes('평일') ? -1 : 1;
     });
 
     let html = '<table class="grid-table"><thead><tr>';
-    html += '<th class="th-time">시간</th>';
+    html += '<th class="th-time">수업 시간</th>';
     rooms.forEach(r => { html += `<th class="th-room">${r}</th>`; });
     html += '</tr></thead><tbody>';
 
-    times.forEach(time => {
-      const tm = TIME_META[time] || { label:time, sub:'', badge:'morning' };
+    slotKeys.forEach(key => {
+      const [time, type] = key.split('|');
+      const sm = slotMeta(time, type);
+      const badgeLabel = sm.badge==='gov'?'국비': sm.badge==='night'?'야간': sm.badge==='wkd-am'?'오전':'오후';
       html += '<tr>';
       html += `<td class="td-time">
-        <div class="tl-main">${tm.label}</div>
-        <div class="tl-sub">${tm.sub}</div>
-        <span class="tl-badge ${tm.badge}">${tm.badge==='morning'?'오전':tm.badge==='afternoon'?'오후':'야간'}</span>
+        <div class="tl-range">${sm.range}</div>
+        <div class="tl-sub">${sm.sub}</div>
+        <span class="tl-badge ${sm.badge}">${badgeLabel}</span>
       </td>`;
 
       rooms.forEach(room => {
-        const cs = filtered.filter(c => c.time === time && c.room === room);
+        const cs = filtered.filter(c => c.time === time && c.type === type && c.room === room);
         if (cs.length === 0) {
           html += '<td class="grid-cell grid-cell-empty"></td>';
         } else {
