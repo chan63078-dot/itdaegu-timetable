@@ -263,6 +263,153 @@
 
     .empty-msg { text-align: center; padding: 48px; color: #9ca3af; font-size: 14px; }
 
+    /* ── TODAY BANNER ── */
+    .today-banner {
+      background: linear-gradient(135deg, #065f46, #059669);
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      box-shadow: 0 2px 10px rgba(5,150,105,.25);
+    }
+    .today-banner strong { font-size: 15px; }
+    .today-banner-close {
+      margin-left: auto; background: none; border: none;
+      color: rgba(255,255,255,.7); cursor: pointer; font-size: 16px; line-height: 1;
+      padding: 0 4px;
+    }
+    .today-banner-close:hover { color: #fff; }
+    .chip-today { border-color: #059669 !important; color: #065f46 !important; }
+    .chip-today.active { background: #d1fae5 !important; border-color: #059669 !important; color: #065f46 !important; }
+    tr.row-today td { background: #f0fdf4 !important; }
+    tr.row-today td:first-child { border-left: 3px solid #059669; }
+
+    /* ── GANTT VIEW ── */
+    .gantt-wrap {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+    }
+    .gantt-scroll { overflow-x: auto; }
+    .gantt-inner { min-width: 700px; }
+
+    .g-header-row, .g-row {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .g-row:hover .g-label { background: #f1f5f9; }
+    .g-label {
+      width: 155px;
+      min-width: 155px;
+      flex-shrink: 0;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #374151;
+      background: #f8fafc;
+      border-right: 2px solid #d1d5db;
+      display: flex;
+      align-items: center;
+      word-break: keep-all;
+      line-height: 1.4;
+    }
+    .g-label-head { background: #1e3a8a; color: #fff; font-size: 12px; min-height: 36px; }
+
+    .g-timeline {
+      flex: 1;
+      position: relative;
+      display: flex;
+    }
+    .g-timeline-head { min-height: 36px; align-items: stretch; }
+
+    .g-month {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      background: #1e3a8a;
+      border-right: 1px solid rgba(255,255,255,.2);
+    }
+    .g-month-bg {
+      flex-shrink: 0;
+      border-right: 1px solid #e5e7eb;
+      position: relative;
+      height: 100%;
+    }
+    .g-month-bg-alt { background: rgba(0,0,0,.018); }
+
+    .g-today-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: #ef4444;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .g-today-line::after {
+      content: '오늘';
+      position: absolute;
+      top: 3px;
+      left: 4px;
+      font-size: 9px;
+      color: #ef4444;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .g-bar {
+      position: absolute;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      z-index: 3;
+      transition: filter .15s, transform .1s;
+      border: 1px solid transparent;
+      min-width: 3px;
+    }
+    .g-bar:hover { filter: brightness(.92); transform: scaleY(1.06); z-index: 10; }
+    .g-bar.g-bar-today { box-shadow: 0 0 0 2px #059669; }
+    .g-bar-text {
+      padding: 0 6px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Gantt bar colors (more saturated than grid card backgrounds) */
+    .g-bar.cb-gov    { background: #93c5fd; border-color: #2563eb; }
+    .g-bar.cb-gov    .g-bar-text { color: #1e3a8a; }
+    .g-bar.cb-night  { background: #c4b5fd; border-color: #7c3aed; }
+    .g-bar.cb-night  .g-bar-text { color: #4c1d95; }
+    .g-bar.cb-wkd-am { background: #fcd34d; border-color: #d97706; }
+    .g-bar.cb-wkd-am .g-bar-text { color: #78350f; }
+    .g-bar.cb-wkd-pm { background: #fb923c; border-color: #ea580c; }
+    .g-bar.cb-wkd-pm .g-bar-text { color: #fff; }
+    .g-bar.cb-wkd-09 { background: #6ee7b7; border-color: #059669; }
+    .g-bar.cb-wkd-09 .g-bar-text { color: #064e3b; }
+
+    /* Gantt legend */
+    .gantt-legend {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      padding: 10px 16px;
+      border-top: 1px solid #f3f4f6;
+      font-size: 11px; color: #6b7280;
+      align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
     .footer {
       text-align: center; padding: 24px; font-size: 12px;
       color: #9ca3af; border-top: 1px solid #e5e7eb;
@@ -300,6 +447,7 @@
       <div class="view-toggle">
         <button class="view-btn active" data-view="table">📋 테이블</button>
         <button class="view-btn" data-view="grid">📅 그리드</button>
+        <button class="view-btn" data-view="gantt">📊 간트</button>
       </div>
     </div>
     <div class="filter-row">
@@ -314,7 +462,16 @@
       <div class="filter-group" id="month-filters">
         <button class="chip active" data-month="전체">전체</button>
       </div>
+      <div class="filter-divider"></div>
+      <button class="chip chip-today" id="btn-today">📍 오늘</button>
     </div>
+  </div>
+
+  <!-- TODAY BANNER -->
+  <div id="today-banner" class="today-banner" style="display:none">
+    <span>📍</span>
+    <span id="today-label"></span>
+    <button class="today-banner-close" id="btn-today-close">✕</button>
   </div>
 
   <!-- TABLE VIEW -->
@@ -355,6 +512,25 @@
       <div id="grid-container"></div>
     </div>
   </div>
+  <!-- GANTT VIEW -->
+  <div id="view-gantt" class="gantt-wrap" style="display:none">
+    <div class="view-header">
+      <div class="view-title">📊 강좌 일정 타임라인</div>
+      <div class="result-count" id="count-gantt"></div>
+    </div>
+    <div class="gantt-scroll">
+      <div id="gantt-container"></div>
+    </div>
+    <div class="gantt-legend">
+      <span style="font-weight:600;color:#374151">범례:</span>
+      <div class="legend-item"><div class="legend-dot" style="background:#93c5fd;border:1px solid #2563eb"></div>국비 오전반</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c4b5fd;border:1px solid #7c3aed"></div>평일 야간반</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fcd34d;border:1px solid #d97706"></div>주말 오전반</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fb923c;border:1px solid #ea580c"></div>주말 오후반</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6ee7b7;border:1px solid #059669"></div>주말 09시반</div>
+      <div class="legend-item" style="margin-left:8px"><div class="legend-dot" style="background:#ef4444;width:3px;border-radius:0"></div>오늘</div>
+    </div>
+  </div>
 </main>
 
 <footer class="footer">
@@ -377,6 +553,58 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
   let sortCol = 'startDate';
   let sortDir = 'asc';
   let viewMode = 'table';
+  let todayMode = false;
+
+  // ── 오늘 수업 판별 ──
+  const DOW_MAP = {'월':1,'화':2,'수':3,'목':4,'금':5,'토':6,'일':0};
+  const KR_DAYS = ['일','월','화','수','목','금','토'];
+
+  function parseDow(days) {
+    if (!days) return new Set();
+    if (days === '월~금') return new Set([1,2,3,4,5]);
+    if (days === '토/일') return new Set([0,6]);
+    const s = new Set();
+    for (const ch of days) if (DOW_MAP[ch] !== undefined) s.add(DOW_MAP[ch]);
+    return s;
+  }
+
+  function isActiveToday(c) {
+    const today = new Date();
+    const ys = today.toISOString().slice(0,10);
+    if (ys < c.startDate || ys > c.endDate) return false;
+    return parseDow(c.days).has(today.getDay());
+  }
+
+  function todayLabel() {
+    const t = new Date();
+    const m = t.getMonth()+1, d = t.getDate(), dow = KR_DAYS[t.getDay()];
+    return `<strong>${m}월 ${d}일 (${dow})</strong> 진행 중인 강좌`;
+  }
+
+  // ── Gantt 계산 ──
+  const G_START = new Date('2026-03-01');
+  const G_END   = new Date('2026-09-30');
+  const G_DAYS  = (G_END - G_START) / 86400000;
+  const G_MONTHS = [
+    {label:'3월',days:31},{label:'4월',days:30},{label:'5월',days:31},
+    {label:'6월',days:30},{label:'7월',days:31},{label:'8월',days:31},{label:'9월',days:30}
+  ];
+
+  function datePct(str) {
+    const d = new Date(str);
+    return Math.max(0, Math.min(100, (d - G_START) / 86400000 / G_DAYS * 100));
+  }
+
+  function assignLanes(courses) {
+    const sorted = [...courses].sort((a,b) => a.startDate < b.startDate ? -1 : 1);
+    const laneEnds = [];
+    return sorted.map(c => {
+      let lane = laneEnds.findIndex(e => c.startDate > e);
+      if (lane === -1) { lane = laneEnds.length; }
+      laneEnds[lane] = c.endDate;
+      return { c, lane };
+    });
+  }
 
   const ROOM_ORDER = [
     'A[10층]-1','A[10층]-2',
@@ -462,6 +690,7 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
     filtered = allCourses.filter(c => {
       if (filterType  !== '전체' && c.type !== filterType)           return false;
       if (filterMonth !== '전체' && getMonth(c.startDate) !== filterMonth) return false;
+      if (todayMode && !isActiveToday(c)) return false;
       if (!q) return true;
       return (
         c.name.toLowerCase().includes(q) ||
@@ -469,7 +698,19 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
         (c.room && c.room.toLowerCase().includes(q))
       );
     });
-    viewMode === 'table' ? renderTable() : renderGrid();
+
+    // Today banner
+    const banner = document.getElementById('today-banner');
+    if (todayMode) {
+      document.getElementById('today-label').innerHTML = todayLabel();
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+
+    if (viewMode === 'table') renderTable();
+    else if (viewMode === 'grid') renderGrid();
+    else renderGantt();
   }
 
   /* ── Table ── */
@@ -487,7 +728,7 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
     document.getElementById('table-body').innerHTML = sorted.length === 0
       ? '<tr><td colspan="9" class="empty-msg">검색 결과가 없습니다.</td></tr>'
       : sorted.map(c => `
-        <tr>
+        <tr class="${isActiveToday(c)?'row-today':''}">
           <td class="td-name">${c.name}</td>
           <td class="td-room">${c.room||''}</td>
           <td class="td-instructor">${c.instructor||'-'}</td>
@@ -569,6 +810,71 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
     document.getElementById('grid-container').innerHTML = html;
   }
 
+  /* ── Gantt ── */
+  function renderGantt() {
+    document.getElementById('count-gantt').innerHTML = `<strong>${filtered.length}</strong>개 강좌`;
+
+    if (filtered.length === 0) {
+      document.getElementById('gantt-container').innerHTML = '<p class="empty-msg">검색 결과가 없습니다.</p>';
+      return;
+    }
+
+    const rooms = [...new Set(filtered.map(c => c.room).filter(Boolean))].sort((a,b) => {
+      const ia = ROOM_ORDER.indexOf(a), ib = ROOM_ORDER.indexOf(b);
+      if (ia===-1&&ib===-1) return a.localeCompare(b,'ko');
+      if (ia===-1) return 1; if (ib===-1) return -1; return ia-ib;
+    });
+
+    const BAR_H = 26, BAR_GAP = 4, PAD = 6;
+    const todayPct = datePct(new Date().toISOString().slice(0,10));
+
+    let html = '<div class="gantt-inner">';
+
+    // Header
+    html += '<div class="g-header-row">';
+    html += '<div class="g-label g-label-head">강의실</div>';
+    html += '<div class="g-timeline g-timeline-head">';
+    G_MONTHS.forEach(({label,days}) => {
+      html += `<div class="g-month" style="width:${days/G_DAYS*100}%">${label}</div>`;
+    });
+    html += '</div></div>';
+
+    rooms.forEach(room => {
+      const lanes = assignLanes(filtered.filter(c => c.room === room));
+      const nLane = lanes.length ? Math.max(...lanes.map(l=>l.lane))+1 : 1;
+      const rowH  = PAD*2 + nLane*(BAR_H+BAR_GAP) - BAR_GAP;
+
+      html += '<div class="g-row">';
+      html += `<div class="g-label" style="min-height:${rowH}px">${room}</div>`;
+      html += `<div class="g-timeline" style="min-height:${rowH}px">`;
+
+      G_MONTHS.forEach(({days},i) => {
+        html += `<div class="g-month-bg${i%2?'  g-month-bg-alt':''}" style="width:${days/G_DAYS*100}%"></div>`;
+      });
+
+      if (todayPct > 0 && todayPct < 100) {
+        html += `<div class="g-today-line" style="left:${todayPct}%"></div>`;
+      }
+
+      lanes.forEach(({c, lane}) => {
+        const left  = datePct(c.startDate);
+        const width = Math.max(datePct(c.endDate) - left, 0.4);
+        const top   = PAD + lane*(BAR_H+BAR_GAP);
+        const cls   = cbClass(c).split(' ').slice(1).join(' ');
+        const active = isActiveToday(c) ? ' g-bar-today' : '';
+        const tip   = `${c.name}\n${c.instructor||'강사미정'} | ${c.days} | ${c.startDate} ~ ${c.endDate}${c.notes?'\n⚠️ '+c.notes:''}`;
+        html += `<div class="g-bar ${cls}${active}" style="left:${left}%;width:${width}%;top:${top}px;height:${BAR_H}px" title="${tip}">
+          <span class="g-bar-text">${c.name}</span>
+        </div>`;
+      });
+
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+    document.getElementById('gantt-container').innerHTML = html;
+  }
+
   /* ── Sort indicator ── */
   function setSortIndicator(col, dir) {
     document.querySelectorAll('thead th[data-col]').forEach(th => th.classList.remove('asc','desc'));
@@ -601,6 +907,19 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-04-25","branches":["대구"],"cour
       viewMode = btn.dataset.view;
       document.getElementById('view-table').style.display = viewMode==='table' ? '' : 'none';
       document.getElementById('view-grid').style.display  = viewMode==='grid'  ? '' : 'none';
+      document.getElementById('view-gantt').style.display = viewMode==='gantt' ? '' : 'none';
+      applyFilter();
+    });
+
+    document.getElementById('btn-today').addEventListener('click', () => {
+      todayMode = !todayMode;
+      document.getElementById('btn-today').classList.toggle('active', todayMode);
+      applyFilter();
+    });
+
+    document.getElementById('btn-today-close').addEventListener('click', () => {
+      todayMode = false;
+      document.getElementById('btn-today').classList.remove('active');
       applyFilter();
     });
 
