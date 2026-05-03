@@ -422,6 +422,37 @@
       thead th, tbody td { padding: 8px 10px; }
       .td-name { min-width: 160px; }
     }
+  
+    /* ─── 인트라넷 스타일 그리드 ─── */
+    .ig-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #e2e8f0; }
+    .ig-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    .ig-table th { background: #1e3a5f; color: #fff; font-size: 13px; font-weight: 600;
+      padding: 10px 8px; text-align: center; border: 1px solid #2d4e7a; white-space: nowrap; }
+    .ig-table th.ig-th-time { width: 72px; min-width: 72px; background: #162d4a; }
+    .ig-table td { border: 1px solid #e2e8f0; vertical-align: top; padding: 0; }
+    .ig-table td.ig-td-time { font-size: 12px; color: #64748b; font-weight: 600;
+      text-align: center; padding: 6px 4px; background: #f8fafc; white-space: nowrap; }
+    .ig-table tr:hover td { background: #f0f7ff; }
+    .ig-table tr:hover td.ig-td-time { background: #e0effd; }
+    .ig-card { margin: 4px; border-radius: 7px; padding: 7px 8px; font-size: 12px;
+      cursor: pointer; transition: transform .15s, box-shadow .15s; position: relative; }
+    .ig-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.15); z-index: 2; }
+    .ig-card-wd  { background: #dbeafe; border-left: 3px solid #3b82f6; }
+    .ig-card-we  { background: #fce7f3; border-left: 3px solid #ec4899; }
+    .ig-card-eve { background: #ede9fe; border-left: 3px solid #8b5cf6; }
+    .ig-card-name { font-weight: 700; color: #1e293b; margin-bottom: 3px; line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ig-card-instructor { color: #475569; font-size: 11px; margin-bottom: 2px; }
+    .ig-card-date { color: #94a3b8; font-size: 10px; }
+    .ig-card-days { display: inline-block; font-size: 10px; color: #fff; border-radius: 4px;
+      padding: 1px 5px; margin-top: 3px; font-weight: 600; }
+    .ig-days-wd { background: #3b82f6; }
+    .ig-days-we { background: #ec4899; }
+    .ig-days-eve { background: #8b5cf6; }
+    .ig-empty { background: #fafafa; min-height: 40px; }
+    .ig-branch-badge { display: inline-block; font-size: 10px; color: #fff; border-radius: 4px;
+      padding: 1px 5px; font-weight: 600; margin-left: 4px; vertical-align: middle; }
+  
   </style>
 </head>
 <body>
@@ -963,158 +994,274 @@ window.__SCHEDULE_DATA__ = {"generated":"2026-05-03","branches":["대구","강�
 </script>
 
 
+
 <script>
 (function(){
-  /* ────────────────────────────────────────────────
-   * IT Academy 패치: 지점 필터 + 비고 지점 표시
-   * ─────────────────────────────────────────────── */
-  var BRANCHES = ['전체','대구','강남','신촌','부산','인천','대전','노원'];
+  /* ══════════════════════════════════════════════════════
+   * IT Academy 통합 패치 v3
+   * - 인트라넷 스타일 그리드 (시간대×강의실)
+   * - 지점 필터 → 테이블/그리드/간트 전체 연동
+   * - 비고 지점 뱃지
+   * - NaN월 제거
+   * ══════════════════════════════════════════════════════ */
+
   var BRANCH_COLORS = {
     '대구':'#3b82f6','강남':'#10b981','신촌':'#f59e0b',
     '부산':'#ef4444','인천':'#8b5cf6','대전':'#06b6d4',
     '노원':'#f97316','전체':'#64748b'
   };
+  var TIME_SLOTS = [
+    '09:00','09:30','10:00','10:30','11:00','11:30',
+    '12:00','12:30','13:00','13:30','14:00','14:30',
+    '15:00','15:30','16:00','16:30','17:00','17:30',
+    '18:00','18:30','19:00','19:30','20:00','20:30','21:00'
+  ];
+  var VALID_TIME = /^\d{2}:\d{2}$/;
   var selBranch = '전체';
 
-  // ① 과정명+강의실 → 지점 맵 빌드
-  function buildCourseMap() {
-    var map = {};
-    var courses = (window.__SCHEDULE_DATA__ || {}).courses || [];
-    courses.forEach(function(c) {
-      map[c.name + '|' + c.room] = c.branch || '';
+  /* ── 유효 과정 필터 ────────────────────────────── */
+  function validCourses(branch) {
+    var all = (window.__SCHEDULE_DATA__ || {}).courses || [];
+    return all.filter(function(c) {
+      if(branch !== '전체' && c.branch !== branch) return false;
+      if(!c.startDate || !/^\d{4}-\d{2}-\d{2}$/.test(c.startDate)) return false;
+      if(!VALID_TIME.test(c.time)) return false;
+      return true;
     });
+  }
+
+  /* ── 카드 색상 결정 ────────────────────────────── */
+  function cardClass(c) {
+    var h = parseInt((c.time||'09').split(':')[0], 10);
+    if(c.type === '주말') return 'ig-card-we';
+    if(h >= 19) return 'ig-card-eve';
+    return 'ig-card-wd';
+  }
+  function daysClass(c) {
+    var h = parseInt((c.time||'09').split(':')[0], 10);
+    if(c.type === '주말') return 'ig-days-we';
+    if(h >= 19) return 'ig-days-eve';
+    return 'ig-days-wd';
+  }
+
+  /* ══ 그리드 렌더 ═══════════════════════════════════ */
+  function renderGrid(branch) {
+    var courses = validCourses(branch);
+    var rooms = [];
+    var roomSet = {};
+    courses.forEach(function(c) {
+      if(c.room && !roomSet[c.room] && c.room !== '0단계') {
+        roomSet[c.room] = true; rooms.push(c.room);
+      }
+    });
+    rooms.sort();
+
+    /* 강의실별, 시간대별 course 맵 */
+    var map = {};
+    TIME_SLOTS.forEach(function(t) {
+      map[t] = {};
+      rooms.forEach(function(r) { map[t][r] = []; });
+    });
+    courses.forEach(function(c) {
+      if(map[c.time] && map[c.time][c.room] !== undefined) {
+        map[c.time][c.room].push(c);
+      }
+    });
+
+    /* 빈 시간대 제거 */
+    var activeTimes = TIME_SLOTS.filter(function(t) {
+      return rooms.some(function(r) { return map[t][r] && map[t][r].length > 0; });
+    });
+
+    if(rooms.length === 0) {
+      return '<div style="padding:40px;text-align:center;color:#94a3b8;">해당 지점 데이터가 없습니다.</div>';
+    }
+
+    var th = rooms.map(function(r) {
+      return '<th class="ig-th-room">' + r + '</th>';
+    }).join('');
+
+    var rows = activeTimes.map(function(t) {
+      var tds = rooms.map(function(r) {
+        var cs = map[t][r];
+        if(!cs || cs.length === 0) return '<td class="ig-empty"></td>';
+        var cards = cs.map(function(c) {
+          var cc = cardClass(c);
+          var dc = daysClass(c);
+          var sd = c.startDate ? c.startDate.slice(5).replace('-','/') : '';
+          var ed = c.endDate   ? c.endDate.slice(5).replace('-','/')   : '';
+          var branchBadge = branch === '전체'
+            ? '<span class="ig-branch-badge" style="background:'+BRANCH_COLORS[c.branch]+'">'+c.branch+'</span>'
+            : '';
+          return '<div class="ig-card '+cc+'">'
+            + '<div class="ig-card-name">'+c.name+'</div>'
+            + '<div class="ig-card-instructor">👤 '+(c.instructor||'-')+'</div>'
+            + '<div class="ig-card-date">📅 '+sd+' ~ '+ed+'</div>'
+            + '<span class="ig-card-days '+dc+'">'+c.days+'</span>'
+            + branchBadge
+            + '</div>';
+        }).join('');
+        return '<td>'+cards+'</td>';
+      }).join('');
+      return '<tr><td class="ig-td-time">'+t+'</td>'+tds+'</tr>';
+    }).join('');
+
+    return '<div class="ig-wrap"><table class="ig-table">'
+      + '<thead><tr><th class="ig-th-time">시간</th>'+th+'</tr></thead>'
+      + '<tbody>'+rows+'</tbody></table></div>';
+  }
+
+  /* ══ 간트 필터 ═════════════════════════════════════ */
+  function filterGantt(branch) {
+    var courses = validCourses(branch);
+    var nameSet = {};
+    courses.forEach(function(c) { nameSet[c.name+'|'+c.room] = true; });
+    document.querySelectorAll('#view-gantt [data-name], #view-gantt .gantt-row, #view-gantt tr[data-branch]').forEach(function(el) {
+      var k = (el.dataset.name||'') + '|' + (el.dataset.room||'');
+      el.style.display = (branch==='전체' || nameSet[k]) ? '' : 'none';
+    });
+    /* 간트 행에 data-branch 없으면 class로 판단 */
+    if(branch !== '전체') {
+      document.querySelectorAll('#view-gantt .gantt-bar, #view-gantt .gantt-label').forEach(function(el) {
+        var row = el.closest('tr, .gantt-row');
+        if(row && row.dataset.branch && row.dataset.branch !== branch)
+          row.style.display = 'none';
+      });
+    }
+  }
+
+  /* ══ 테이블 필터 ════════════════════════════════════ */
+  function buildCourseMap(branch) {
+    var map = {};
+    validCourses(branch).forEach(function(c) { map[c.name+'|'+c.room] = c; });
     return map;
   }
 
-  // ② 모든 테이블 행에 data-branch 추가 + 비고 컬럼에 지점 뱃지 삽입
-  function tagRows(map) {
-    var rows = document.querySelectorAll('table tbody tr');
+  function tagAndFilterTable(map, branch) {
+    var rows = document.querySelectorAll('table:not(.ig-table) tbody tr');
     rows.forEach(function(row) {
-      if(row.dataset.branchTagged) return;
-      var name = (row.querySelector('.td-name') || row.querySelector('td:first-child'))?.textContent?.trim() || '';
-      var room = (row.querySelector('.td-room') || row.querySelector('td:nth-child(2)'))?.textContent?.trim() || '';
-      var branch = map[name + '|' + room] || '';
-      if(!branch) return;
-      row.dataset.branch = branch;
-      row.dataset.branchTagged = '1';
-
-      // 비고 컬럼 (마지막 td)에 지점 뱃지 추가
-      var tds = row.querySelectorAll('td');
-      var noteTd = tds[tds.length - 1];
-      if(noteTd && !noteTd.querySelector('.branch-tag')) {
-        var tag = document.createElement('span');
-        tag.className = 'branch-tag';
-        tag.textContent = branch;
-        tag.style.cssText = 'display:inline-block;padding:1px 6px;border-radius:9px;font-size:11px;font-weight:600;color:#fff;background:' + (BRANCH_COLORS[branch]||'#64748b') + ';margin-right:4px;';
-        noteTd.insertBefore(tag, noteTd.firstChild);
+      var name = (row.querySelector('.td-name')||row.querySelector('td'))?.textContent?.trim()||'';
+      var room = row.querySelectorAll('td')[1]?.textContent?.trim()||'';
+      var c = map[name+'|'+room];
+      if(c) {
+        row.dataset.branch = c.branch;
+        if(!row.dataset.branchTagged) {
+          row.dataset.branchTagged = '1';
+          var tds = row.querySelectorAll('td');
+          var noteTd = tds[tds.length-1];
+          if(noteTd && !noteTd.querySelector('.branch-tag')) {
+            var tag = document.createElement('span');
+            tag.className = 'branch-tag';
+            tag.textContent = c.branch;
+            tag.style.cssText = 'display:inline-block;padding:1px 6px;border-radius:9px;font-size:11px;font-weight:600;color:#fff;background:'+(BRANCH_COLORS[c.branch]||'#64748b')+';margin-right:4px;';
+            noteTd.insertBefore(tag, noteTd.firstChild);
+          }
+        }
       }
+      row.style.display = (branch==='전체' || (row.dataset.branch===branch)) ? '' : 'none';
+    });
+    /* 건수 업데이트 */
+    var visible = document.querySelectorAll('table:not(.ig-table) tbody tr:not([style*="none"])').length;
+    var countEl = document.querySelector('.course-count,.result-count strong,#count-table strong');
+    if(countEl) countEl.textContent = visible;
+  }
+
+  /* ══ 통합 적용 ══════════════════════════════════════ */
+  function applyAll(branch) {
+    selBranch = branch;
+
+    /* 헤더 */
+    var titleEl = document.getElementById('branch-title');
+    if(titleEl) titleEl.textContent = (branch==='전체'?'전 지점':branch)+' 강의시간표';
+    var badge = document.querySelector('.header-badge');
+    if(badge) badge.textContent = branch==='전체'?'전 지점':branch;
+
+    /* 그리드 재렌더 */
+    var gc = document.getElementById('grid-container');
+    if(gc) gc.innerHTML = renderGrid(branch);
+
+    /* 간트 필터 */
+    filterGantt(branch);
+
+    /* 테이블 태그+필터 */
+    var map = buildCourseMap(branch);
+    tagAndFilterTable(map, branch);
+
+    /* 건수 */
+    var n = validCourses(branch).length;
+    document.querySelectorAll('.result-count strong, .course-count').forEach(function(el) {
+      el.textContent = n;
     });
   }
 
-  // ③ 지점 필터 적용 (display none/block)
-  function applyBranchFilter() {
-    var rows = document.querySelectorAll('table tbody tr');
-    rows.forEach(function(row) {
-      if(selBranch === '전체') {
-        row.style.display = '';
-      } else {
-        row.style.display = (row.dataset.branch === selBranch) ? '' : 'none';
-      }
-    });
-    // 카드/그리드 뷰도 처리
-    document.querySelectorAll('[data-branch]:not(button):not(tr)').forEach(function(el) {
-      el.style.display = (selBranch === '전체' || el.dataset.branch === selBranch) ? '' : 'none';
-    });
-    // 건수 업데이트
-    var visible = document.querySelectorAll('table tbody tr:not([style*="display: none"]):not([style*="display:none"])').length;
-    var countEl = document.querySelector('.course-count, [class*="count"]');
-    if(countEl) countEl.textContent = visible + '개 강좌';
-  }
-
-  // ④ MutationObserver: 앱이 재렌더해도 자동 태깅
-  var observer;
-  function startObserver(map) {
-    var tbody = document.querySelector('table tbody');
-    if(!tbody) return;
-    if(observer) observer.disconnect();
-    observer = new MutationObserver(function() {
-      tagRows(map);
-      applyBranchFilter();
-    });
-    observer.observe(tbody, { childList: true, subtree: true });
-  }
-
-  // ⑤ 지점 필터 UI 초기화
-  function initBranchUI(map) {
+  /* ══ 지점 버튼 이벤트 ════════════════════════════════ */
+  function initBranchUI() {
     var btns = document.querySelectorAll('#branch-filters .chip');
     btns.forEach(function(btn) {
       btn.addEventListener('click', function() {
         btns.forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        selBranch = btn.dataset.branch;
-
-        // 헤더 텍스트 업데이트
-        var titleEl = document.getElementById('branch-title');
-        if(titleEl) titleEl.textContent = (selBranch === '전체' ? '전 지점' : selBranch) + ' 강의시간표';
-        var badge = document.querySelector('.header-badge');
-        if(badge) badge.textContent = selBranch === '전체' ? '전 지점' : selBranch;
-
-        tagRows(map);
-        applyBranchFilter();
+        applyAll(btn.dataset.branch);
       });
     });
   }
 
-  // ⑥ NaN월 버튼 제거
-  function removeNanMonth() {
-    document.querySelectorAll('#month-filters .chip').forEach(function(b) {
-      if(b.textContent.includes('NaN') || b.dataset.month === 'NaN') b.remove();
-    });
-  }
-
-  // ⑦ 기존 유형/월 필터 클릭 후에도 지점 필터 유지
-  function hookExistingFilters() {
+  /* ══ 유형/월 필터 클릭 후 지점 유지 ══════════════════ */
+  function hookFilters() {
     ['#type-filters','#month-filters'].forEach(function(sel) {
       var grp = document.querySelector(sel);
       if(!grp) return;
       grp.addEventListener('click', function() {
         setTimeout(function() {
-          var map = buildCourseMap();
-          tagRows(map);
-          applyBranchFilter();
+          var map = buildCourseMap(selBranch);
+          tagAndFilterTable(map, selBranch);
         }, 80);
       });
     });
-    // 검색창 입력 후에도 적용
-    var searchInput = document.querySelector('input[type="search"], input[type="text"], .search-input, [placeholder*="검색"]');
-    if(searchInput) {
-      searchInput.addEventListener('input', function() {
-        setTimeout(function() {
-          var map = buildCourseMap();
-          tagRows(map);
-          applyBranchFilter();
-        }, 80);
-      });
-    }
+    var si = document.querySelector('input[placeholder*="검색"]');
+    if(si) si.addEventListener('input', function() {
+      setTimeout(function() { tagAndFilterTable(buildCourseMap(selBranch), selBranch); }, 80);
+    });
   }
 
-  // ⑧ 메인 실행
+  /* ══ NaN월 제거 ══════════════════════════════════════ */
+  function removeNanMonth() {
+    document.querySelectorAll('#month-filters .chip').forEach(function(b) {
+      if(b.textContent.includes('NaN')) b.remove();
+    });
+  }
+
+  /* ══ 뷰 전환 시에도 그리드 재렌더 ════════════════════ */
+  function hookViewBtns() {
+    document.querySelectorAll('.view-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        setTimeout(function() {
+          if(btn.textContent.includes('그리드')) {
+            var gc = document.getElementById('grid-container');
+            if(gc) gc.innerHTML = renderGrid(selBranch);
+          }
+        }, 50);
+      });
+    });
+  }
+
+  /* ══ 메인 ═════════════════════════════════════════════ */
   function main() {
     removeNanMonth();
-    var map = buildCourseMap();
-    tagRows(map);
-    startObserver(map);
-    initBranchUI(map);
-    hookExistingFilters();
-
+    /* 초기 그리드 렌더 */
+    var gc = document.getElementById('grid-container');
+    if(gc) gc.innerHTML = renderGrid(selBranch);
+    initBranchUI();
+    hookFilters();
+    hookViewBtns();
+    /* 초기 테이블 태그 */
+    tagAndFilterTable(buildCourseMap(selBranch), selBranch);
     var badge = document.querySelector('.header-badge');
     if(badge) badge.textContent = '전 지점';
-    var titleEl = document.getElementById('branch-title');
-    if(titleEl) titleEl.textContent = '전 지점 강의시간표';
   }
 
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(main, 500); });
+  if(document.readyState==='loading') {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(main, 500); });
   } else {
     setTimeout(main, 500);
   }
